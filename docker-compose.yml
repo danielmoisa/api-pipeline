@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  app:
+    build: .
+    container_name: api-pipeline
+    restart: unless-stopped
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=pipeline
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:15-alpine
+    container_name: api-pipeline-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=pipeline
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
