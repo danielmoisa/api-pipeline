@@ -28,6 +28,7 @@ func main() {
 		w.Write([]byte("ok"))
 	})
 
+	// Weather
 	http.HandleFunc("/weather", func(w http.ResponseWriter, r *http.Request) {
 		// 1. Get city from URL param
 		city := r.URL.Query().Get("city")
