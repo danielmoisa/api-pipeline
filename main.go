@@ -23,6 +23,11 @@ func main() {
 	}
 	defer conn.Close(context.Background())
 
+	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("ok"))
+	})
+
 	http.HandleFunc("/weather", func(w http.ResponseWriter, r *http.Request) {
 		// 1. Get city from URL param
 		city := r.URL.Query().Get("city")
