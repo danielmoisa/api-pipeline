@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-pipeline
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-pipeline
+  template:
+    metadata:
+      labels:
+        app: api-pipeline
+    spec:
+      containers:
+        - name: api-pipeline
+          image: danielmoisa/api-pipeline:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: api-pipeline-secret
+                  key: DATABASE_URL
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 20
