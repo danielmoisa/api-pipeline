@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: api-pipeline
-          image: danimoisa/api-pipeline:latest
+          image: danimoisa/api-pipeline:10b6a5d9e3183efc630887ff0fc131188cfbb41f
           ports:
             - containerPort: 8080
           env:
