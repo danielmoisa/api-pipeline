@@ -49,6 +49,6 @@ jobs:
           sed -i "s|image: danielmoisa/api-pipeline:.*|image: danielmoisa/api-pipeline:${{ github.sha }}|g" k8s/base/deployment.yaml
           git config user.email "ci@github.com"
           git config user.name "GitHub Actions"
-          git add k8s/base/deployment.yaml
+          git add k8s/deployment.yaml
           git commit -m "ci: update image to ${{ github.sha }}"
           git push
