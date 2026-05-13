@@ -49,6 +49,7 @@ jobs:
           sed -i "s|image: danielmoisa/api-pipeline:.*|image: danielmoisa/api-pipeline:${{ github.sha }}|g" k8s/deployment.yml
           git config user.email "ci@github.com"
           git config user.name "GitHub Actions"
+          git remote set-url origin https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/danielmoisa/api-pipeline.git
           git add k8s/deployment.yml
-          git commit -m "ci: update image to ${{ github.sha }}"
+          git diff --staged --quiet || git commit -m "ci: update image to ${{ github.sha }}"
           git push
