@@ -21,6 +21,21 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
 	}
+
+	_, err = conn.Exec(context.Background(), `
+    CREATE TABLE IF NOT EXISTS weather_logs (
+        id SERIAL PRIMARY KEY,
+        city TEXT,
+        raw_response TEXT,
+        recorded_at TIMESTAMP DEFAULT NOW()
+    )
+`)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to run migrations: %v\n", err)
+		os.Exit(1)
+	}
+	fmt.Println("Migrations done")
+
 	defer conn.Close(context.Background())
 
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
