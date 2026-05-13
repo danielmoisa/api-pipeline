@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_TOKEN }}
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -39,4 +41,16 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/api-pipeline:latest
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/api-pipeline:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/api-pipeline:${{ github.sha }}
+
+      - name: Update image tag in deployment
+        if: github.ref == 'refs/heads/main'
+        run: |
+          sed -i "s|image: danielmoisa/api-pipeline:.*|image: danielmoisa/api-pipeline:${{ github.sha }}|g" k8s/base/deployment.yaml
+          git config user.email "ci@github.com"
+          git config user.name "GitHub Actions"
+          git add k8s/base/deployment.yaml
+          git commit -m "ci: update image to ${{ github.sha }}"
+          git push
